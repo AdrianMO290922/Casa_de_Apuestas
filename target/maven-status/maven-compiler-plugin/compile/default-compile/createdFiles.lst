@@ -16,6 +16,7 @@ com\mycompany\aplicacion_de_apuestas\frames\UserSitio$1.class
 com\mycompany\aplicacion_de_apuestas\frames\AdminSitio$3.class
 com\mycompany\aplicacion_de_apuestas\frames\Registro_Apuesta$5.class
 com\mycompany\aplicacion_de_apuestas\frames\UserSitio$2.class
+com\mycompany\aplicacion_de_apuestas\frames\DBManager\DBManger.class
 com\mycompany\aplicacion_de_apuestas\frames\Registro_Corredor$1.class
 com\mycompany\aplicacion_de_apuestas\frames\Registro_Corredor.class
 com\mycompany\aplicacion_de_apuestas\frames\PanelCorredor.class

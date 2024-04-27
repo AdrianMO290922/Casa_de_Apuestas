@@ -423,7 +423,7 @@ public class Registro_Apuesta extends javax.swing.JFrame {
                         carrera.setGanancia((Double.parseDouble(txtMonto.getText()) * 0.10) + carrera.getGanancia());
                         carrera.setMontoApostado((Double.parseDouble(txtMonto.getText())) + carrera.getMontoApostado());
                         carrera.getListUsers().add(usuario);
-                        usuario.setIdApuesta((carrera.getListRuns().indexOf(corredor)) + 1);
+                        //usuario.setIdApuesta((carrera.getListRuns().indexOf(corredor)) + 1);//BASE DE DATOS
                         System.out.println("El id que se le tuvo que obtener es el siguiente: " + ((carrera.getListRuns().indexOf(corredor)) + 1));
                     }
                 }

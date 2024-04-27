@@ -450,10 +450,10 @@ public class AdminSitio extends javax.swing.JFrame {
                 cantP = (double) corredor.getaFavor();
                 JOptionPane.showMessageDialog(null, "!GANADOR!\n" + "Corredor: " + corredor.getNombre() + " " + corredor.getApellido());
                 for (Usuario user : carreraP.getListUsers()) {
-                    if (user.getIdApuesta() == ganador) {
+                    /*if (user.getIdApuesta() == ganador) {
                         user.setDinero(((carreraP.getMontoApostado()) - (carreraP.getGanancia())) / cantP);
                         JOptionPane.showMessageDialog(null, "El usuario: " + user.getNombre() + "\n" + "Gano: " + user.getDinero());
-                    }
+                    }*///BASE DE DATOS
 
                 }
             }

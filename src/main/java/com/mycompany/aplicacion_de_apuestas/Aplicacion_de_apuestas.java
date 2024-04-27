@@ -20,7 +20,7 @@ public class Aplicacion_de_apuestas {
             UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (Exception e) {
         }
-        Usuario admin = new Usuario("Adrian","Martinez Ortiz","admin1","123",100,1);
+        //Usuario admin = new Usuario("Adrian","Martinez Ortiz","admin1","123",100,1);
         //new Login(admin).setVisible(true);
         new Login().setVisible(true);
     }

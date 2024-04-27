@@ -191,7 +191,7 @@ public class Registro extends javax.swing.JFrame {
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
         boolean band = false;
-        Usuario user = new Usuario(txtNombre.getText(),txtApellidos.getText(),txtCuenta.getText(),txtPassword.getText(),0,D);
+        Usuario user = new Usuario(listUsers.size(),txtNombre.getText(),txtApellidos.getText(),txtCuenta.getText(),txtPassword.getText(),0,D);//BASE DE DATOS
        for(Usuario u:listUsers){
            if(u.getCuenta().equals(user.getCuenta())){
                JOptionPane.showMessageDialog(null, "Cambie nombre de cuenta, ya ha sido ocupada");

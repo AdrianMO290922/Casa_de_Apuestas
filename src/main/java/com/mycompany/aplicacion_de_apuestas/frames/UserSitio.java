@@ -43,7 +43,7 @@ public class UserSitio extends javax.swing.JFrame {
         jPanel1.setLayout(grid);
         setLocationRelativeTo(null);
         this.usuario = usuario;
-        System.out.println("Mi idaP: "+usuario.getIdApuesta());
+       // System.out.println("Mi idaP: "+usuario.getIdApuesta());BASE DE DATOS
     }
 
     /**

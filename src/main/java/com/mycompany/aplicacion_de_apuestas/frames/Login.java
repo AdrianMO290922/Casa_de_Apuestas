@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.mycompany.aplicacion_de_apuestas.Personas;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
+import com.mycompany.aplicacion_de_apuestas.frames.DBManager.DBManger;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -17,6 +18,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -29,6 +33,8 @@ public class Login extends javax.swing.JFrame {
 
     
     ArrayList<Usuario> listUsers = new ArrayList<>();
+    Usuario user = new Usuario();
+    DBManger DB = new DBManger();
     //ArrayList<Personas> listPersonas = new ArrayList<>();
 
     public Login() {
@@ -40,7 +46,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);        
        listUsers.add(use);
-       guardarData();
+       
     }
 
     /**
@@ -187,7 +193,7 @@ public class Login extends javax.swing.JFrame {
 
     private void lableRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lableRegistroMouseClicked
         new Registro(2).setVisible(true);
-        guardarData();
+        
         dispose();
 
 
@@ -195,44 +201,46 @@ public class Login extends javax.swing.JFrame {
 
     private void btnLogeoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogeoActionPerformed
         String cuenta = txtCuenta.getText();
-        String pass = txtPassword.getText();
-        //System.out.println("Cuenta: "+cuenta);
-        //System.out.println("Pass: "+pass);
-        
+        String pass = txtPassword.getText();        
         labelVC.setText("");
         labelVP.setText("");
         int c = 0;
-        for (Usuario user : listUsers) {
-            if(user.getCuenta().equals(cuenta)){
-                
-                if(user.getPassword().equals(pass)){
-                    
+        if(!cuenta.isEmpty() && !pass.isEmpty()){
+        try {
+            user = DB.find(cuenta, pass);
+            if(user != null){
                     if(user.getQuienSoy() == 1){
-                        new AdminSitio(user).setVisible(true);
-                        guardarData();
-                        dispose();
+                        //new AdminSitio(user).setVisible(true);
+                        //guardarData();
+                        //dispose();
+                        JOptionPane.showMessageDialog(null, "Quieres entrar como admin");
                     }else if(user.getQuienSoy() == 2){
-                        System.out.println("Me meti:"+c);
-                        new UserSitio(user).setVisible(true);
-                        guardarData();
-                        dispose();
-                        
+                        JOptionPane.showMessageDialog(null, "Quieres entrar como Usuario");
+                        //new UserSitio(user).setVisible(true);
+                        //guardarData();
+                        //dispose(); 
                     }
-                }else{
-                    labelVP.setText("No se encontro coincidencia*");
-                   // break;
-                }
             }else{
-                labelVC.setText("No se encontro la cuenta*");
-                //break;
+                labelVC.setText("Sin coincidencia *");
+                labelVP.setText("Sin coincidencia *");
             }
+                
+                
+            } catch (Exception ex) {
+            ex.printStackTrace();
+        }    
+        }else{
+            JOptionPane.showMessageDialog(null, "Ingrese datos completos");
         }
+        
+        
 
     }//GEN-LAST:event_btnLogeoActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // Cuando abre
-        try {
+        
+            /*
             BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Usuarios.json"));
             String lectura = null;
             String resultado = "";
@@ -253,30 +261,26 @@ public class Login extends javax.swing.JFrame {
                     Usuario U = (Usuario)persona;
                 listUsers.add(U);
                 }*/
-                listUsers.add(user);
+              //  listUsers.add(user);
 
-            }
+            try {
+                
+                listUsers = DB.rellenarU();
+                
              System.out.println("Se cargaron los Usuarios correctamente");
-            //actualizaCategorias();
-          
         } catch (Exception e) {
             e.printStackTrace();
         }
+            
+            //actualizaCategorias();
+         
+        
 
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // Cuando cierra
-        try {
-            String json = new Gson().toJson(listUsers);
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter("C:/Users/adria/Documents/Archivos del Proyecto JSON/Usuarios.json", false));
-            bw.write(json);
-            bw.close();
-            System.out.println("Se  guardaron los Usuarios correctamente");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }//GEN-LAST:event_formWindowClosing
 
     private void lableRegistroMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lableRegistroMousePressed
@@ -294,18 +298,7 @@ public class Login extends javax.swing.JFrame {
     private void btnLogeoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnLogeoMouseEntered
        
     }//GEN-LAST:event_btnLogeoMouseEntered
-public void guardarData(){
-    try {
-            String json = new Gson().toJson(listUsers);
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter("C:/Users/adria/Documents/Archivos del Proyecto JSON/Usuarios.json", false));
-            bw.write(json);
-            bw.close();
-            System.out.println("Se guardaron los Usuarios correctamente");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-}
     /**
      * @param args the command line arguments
      */
