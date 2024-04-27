@@ -4,32 +4,51 @@
  */
 package com.mycompany.aplicacion_de_apuestas;
 
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
 
-public class Usuario extends Personas implements java.io.Serializable{
+@Entity
+@Table(name = "usuario")
+public class Usuario implements Serializable{
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+    @Column(name = "nombre")
+    private String nombre;
+    @Column(name = "apellido")
+    private String apellido;
+    @Column(name = "cuenta")
     private String cuenta;
+    @Lob
+    @Column(name = "password")
     private String password;
+    @Column(name = "dinero")
     private double dinero;
-    private int idApuesta;
+    @Column(name = "quien_soy")
     private int quienSoy;
     public Usuario() {
     }
 
-    public Usuario(String nombre, String apellido, String cuenta, String password,double dinero,int quienSoy) {
-        super(nombre, apellido);
+    public Usuario(int id,String nombre, String apellido, String cuenta, String password,double dinero,int quienSoy) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
         this.cuenta = cuenta;
         this.password = password;
         this.dinero = dinero;
         this.quienSoy = quienSoy;
-        this.idApuesta =0;
+        
     }
 
-    public int getIdApuesta() {
-        return idApuesta;
-    }
-
-    public void setIdApuesta(int idApuesta) {
-        this.idApuesta = idApuesta;
-    }
+   
 
     public double getDinero() {
         return dinero;
