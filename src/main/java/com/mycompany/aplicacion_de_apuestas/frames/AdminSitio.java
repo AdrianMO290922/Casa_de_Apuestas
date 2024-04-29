@@ -13,6 +13,7 @@ import com.mycompany.aplicacion_de_apuestas.Carrera;
 import com.mycompany.aplicacion_de_apuestas.Corredor;
 import com.mycompany.aplicacion_de_apuestas.Personas;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
+import com.mycompany.aplicacion_de_apuestas.frames.DBManager.DBManger;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.GridLayout;
@@ -44,6 +45,7 @@ public class AdminSitio extends javax.swing.JFrame {
     ArrayList<Carrera> listCarr = new ArrayList<>();
     Carrera carreraP;
     Usuario usuario;
+    DBManger DB = new DBManger();
     Random r = new Random();
 
     public AdminSitio() {
@@ -292,7 +294,6 @@ public class AdminSitio extends javax.swing.JFrame {
 
     private void labelAddCountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelAddCountMouseClicked
         new Registro(1).setVisible(true);
-        guardarData();
         dispose();
     }//GEN-LAST:event_labelAddCountMouseClicked
 
@@ -300,7 +301,6 @@ public class AdminSitio extends javax.swing.JFrame {
         
             new Registro_Corredor(usuario).setVisible(true);
             actualizaCorredores();
-            guardarData();
             dispose();
         
     }//GEN-LAST:event_btnRCorredorActionPerformed

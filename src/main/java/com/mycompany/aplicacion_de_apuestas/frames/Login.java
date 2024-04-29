@@ -31,7 +31,6 @@ import org.json.simple.parser.ParseException;
  */
 public class Login extends javax.swing.JFrame {
 
-    
     ArrayList<Usuario> listUsers = new ArrayList<>();
     Usuario user = new Usuario();
     DBManger DB = new DBManger();
@@ -44,9 +43,9 @@ public class Login extends javax.swing.JFrame {
 
     public Login(Usuario use) {
         initComponents();
-        setLocationRelativeTo(null);        
-       listUsers.add(use);
-       
+        setLocationRelativeTo(null);
+        listUsers.add(use);
+
     }
 
     /**
@@ -193,7 +192,6 @@ public class Login extends javax.swing.JFrame {
 
     private void lableRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lableRegistroMouseClicked
         new Registro(2).setVisible(true);
-        
         dispose();
 
 
@@ -201,46 +199,43 @@ public class Login extends javax.swing.JFrame {
 
     private void btnLogeoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogeoActionPerformed
         String cuenta = txtCuenta.getText();
-        String pass = txtPassword.getText();        
+        String pass = txtPassword.getText();
         labelVC.setText("");
         labelVP.setText("");
         int c = 0;
-        if(!cuenta.isEmpty() && !pass.isEmpty()){
-        try {
-            user = DB.find(cuenta, pass);
-            if(user != null){
-                    if(user.getQuienSoy() == 1){
-                        //new AdminSitio(user).setVisible(true);
-                        //guardarData();
-                        //dispose();
+        if (!cuenta.isEmpty() && !pass.isEmpty()) {
+            try {
+                user = DB.findU(cuenta, pass);
+                if (user != null) {
+                    if (user.getQuienSoy() == 1) {
+                        new AdminSitio(user).setVisible(true);
+                        dispose();
                         JOptionPane.showMessageDialog(null, "Quieres entrar como admin");
-                    }else if(user.getQuienSoy() == 2){
+                    } else if (user.getQuienSoy() == 2) {
                         JOptionPane.showMessageDialog(null, "Quieres entrar como Usuario");
-                        //new UserSitio(user).setVisible(true);
+                        new UserSitio(user).setVisible(true);
                         //guardarData();
                         //dispose(); 
                     }
-            }else{
-                labelVC.setText("Sin coincidencia *");
-                labelVP.setText("Sin coincidencia *");
-            }
-                
-                
+                } else {
+                    labelVC.setText("Sin coincidencia *");
+                    labelVP.setText("Sin coincidencia *");
+                }
+
             } catch (Exception ex) {
-            ex.printStackTrace();
-        }    
-        }else{
+                ex.printStackTrace();
+            }
+        } else {
             JOptionPane.showMessageDialog(null, "Ingrese datos completos");
         }
-        
-        
+
 
     }//GEN-LAST:event_btnLogeoActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // Cuando abre
-        
-            /*
+
+        /*
             BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Usuarios.json"));
             String lectura = null;
             String resultado = "";
@@ -261,20 +256,17 @@ public class Login extends javax.swing.JFrame {
                     Usuario U = (Usuario)persona;
                 listUsers.add(U);
                 }*/
-              //  listUsers.add(user);
+        //  listUsers.add(user);
+        try {
 
-            try {
-                
-                listUsers = DB.rellenarU();
-                
-             System.out.println("Se cargaron los Usuarios correctamente");
+            listUsers = DB.rellenarU();
+
+            System.out.println("Se cargaron los Usuarios correctamente");
         } catch (Exception e) {
             e.printStackTrace();
         }
-            
-            //actualizaCategorias();
-         
-        
+
+        //actualizaCategorias();
 
     }//GEN-LAST:event_formWindowOpened
 
@@ -288,7 +280,7 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_lableRegistroMousePressed
 
     private void lableRegistroMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lableRegistroMouseEntered
-        lableRegistro.setBackground(new Color(85,88,90));
+        lableRegistro.setBackground(new Color(85, 88, 90));
     }//GEN-LAST:event_lableRegistroMouseEntered
 
     private void lableRegistroMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lableRegistroMouseExited
@@ -296,7 +288,7 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_lableRegistroMouseExited
 
     private void btnLogeoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnLogeoMouseEntered
-       
+
     }//GEN-LAST:event_btnLogeoMouseEntered
 
     /**

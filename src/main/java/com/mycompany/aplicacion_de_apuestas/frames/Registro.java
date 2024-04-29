@@ -7,11 +7,14 @@ package com.mycompany.aplicacion_de_apuestas.frames;
 import com.google.gson.Gson;
 import com.mycompany.aplicacion_de_apuestas.Personas;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
+import com.mycompany.aplicacion_de_apuestas.frames.DBManager.DBManger;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -24,6 +27,7 @@ public class Registro extends javax.swing.JFrame {
    // ArrayList<Personas> listPersonas = new ArrayList<>();
     ArrayList<Usuario> listUsers = new ArrayList<>();
     Personas persona;
+    DBManger DB = new DBManger();
     int D;
     public Registro() {
         initComponents();
@@ -164,34 +168,11 @@ public class Registro extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Usuarios.json"));
-            String lectura = null;
-            String resultado = "";
-            while ((lectura = br.readLine()) != null) {
-                resultado += lectura;
-            }
-            br.close();
-
-            JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(resultado);
-
-            listUsers.clear();
-            for (int i = 0; i < jsonArray.size(); i++) {
-                Usuario user = new Gson().fromJson(jsonArray.get(i).toString(), Usuario.class);
-                listUsers.add(user);
-
-            }
-             System.out.println("Se cargaron los datos correctamente");
-            //actualizaCategorias();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }//GEN-LAST:event_formWindowOpened
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
         boolean band = false;
-        Usuario user = new Usuario(listUsers.size(),txtNombre.getText(),txtApellidos.getText(),txtCuenta.getText(),txtPassword.getText(),0,D);//BASE DE DATOS
+        /*Usuario user = new Usuario(80,txtNombre.getText(),txtApellidos.getText(),txtCuenta.getText(),txtPassword.getText(),0,D);//BASE DE DATOS
        for(Usuario u:listUsers){
            if(u.getCuenta().equals(user.getCuenta())){
                JOptionPane.showMessageDialog(null, "Cambie nombre de cuenta, ya ha sido ocupada");
@@ -204,30 +185,31 @@ public class Registro extends javax.swing.JFrame {
        }
        if(band){
            listUsers.add(user);
-        
+        */
+        int result = 0;
+        if(!txtNombre.getText().isEmpty() && !txtApellidos.getText().isEmpty() && !txtCuenta.getText().isEmpty() && !txtPassword.getText().isEmpty()){
+            try {
+                result = DB.addUser(txtNombre.getText(), txtApellidos.getText(), txtCuenta.getText(), txtPassword.getText(), D);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+          if(result != 1){
+              JOptionPane.showMessageDialog(null, "Problema al insertar");
+          }
         new Login().setVisible(true);
-        guardarData();
-        dispose();
-       }
+        dispose();    
+        }else{
+            JOptionPane.showMessageDialog(null, "Falto algun campo por llenar");
+        }
+        
+       //}
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
          new Login().setVisible(true);
-        guardarData();
         dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
-public void guardarData(){
-    try {
-            String json = new Gson().toJson(listUsers);
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter("C:/Users/adria/Documents/Archivos del Proyecto JSON/Usuarios.json", false));
-            bw.write(json);
-            bw.close();
-            System.out.println("Se supone que se guardaron correctamente");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-}
     /**
      * @param args the command line arguments
      * 

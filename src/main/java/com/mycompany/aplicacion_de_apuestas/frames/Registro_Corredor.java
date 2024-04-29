@@ -9,11 +9,14 @@ import com.mycompany.aplicacion_de_apuestas.Carrera;
 import com.mycompany.aplicacion_de_apuestas.Corredor;
 import com.mycompany.aplicacion_de_apuestas.Personas;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
+import com.mycompany.aplicacion_de_apuestas.frames.DBManager.DBManger;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
@@ -26,6 +29,8 @@ public class Registro_Corredor extends javax.swing.JFrame {
     ArrayList<Carrera> listCarr = new ArrayList<>();
     Usuario usuario;
     Carrera carreraP;
+    DBManger DB = new DBManger();
+    
     
  // ArrayList<Personas> listPersonas = new ArrayList<>();
     public Registro_Corredor() {
@@ -204,9 +209,13 @@ public class Registro_Corredor extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-        Corredor corredor = new Corredor(txtNombre.getText(),txtApellidos.getText(),3,Double.parseDouble(txtPeso.getText()),Double.parseDouble(txtAltura.getText()),Integer.parseInt(txtYear.getText()),Integer.parseInt(txtCGanadas.getText()),0);
-        listRuns.add(corredor);
-        guardarData();
+        try {
+            //Corredor corredor = new Corredor(txtNombre.getText(),txtApellidos.getText(),3,Double.parseDouble(txtPeso.getText()),Double.parseDouble(txtAltura.getText()),Integer.parseInt(txtYear.getText()),Integer.parseInt(txtCGanadas.getText()),0);
+            //listRuns.add(corredor);
+            DB.addRun(txtNombre.getText(), txtApellidos.getText(), Integer.parseInt(txtYear.getText()),Double.parseDouble(txtPeso.getText()),Double.parseDouble(txtAltura.getText()),3,Integer.parseInt(txtCGanadas.getText()));
+        } catch (Exception ex) {
+            Logger.getLogger(Registro_Corredor.class.getName()).log(Level.SEVERE, null, ex);
+        }
         new AdminSitio(usuario).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnRegistrarActionPerformed

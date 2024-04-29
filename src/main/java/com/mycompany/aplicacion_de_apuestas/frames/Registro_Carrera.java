@@ -7,11 +7,14 @@ package com.mycompany.aplicacion_de_apuestas.frames;
 import com.google.gson.Gson;
 import com.mycompany.aplicacion_de_apuestas.Carrera;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
+import com.mycompany.aplicacion_de_apuestas.frames.DBManager.DBManger;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
@@ -23,6 +26,7 @@ public class Registro_Carrera extends javax.swing.JFrame {
 
     ArrayList<Carrera> listCarr = new ArrayList<>();
     Usuario usuario;
+    DBManger DB = new DBManger();
     public Registro_Carrera(Usuario usuario) {
         initComponents();
         setLocationRelativeTo(null);
@@ -124,11 +128,17 @@ public class Registro_Carrera extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Carrera carrera = new Carrera(jTextField1.getText(),listCarr.size()+1);
-        listCarr.add(carrera);
-        guardarData();
-        new AdminSitio(usuario).setVisible(true);
+        try {
+            // Carrera carrera = new Carrera(jTextField1.getText(),listCarr.size()+1);
+            //listCarr.add(carrera);
+            //guardarData();
+            DB.addCarrer(jTextField1.getText().toString());
+            new AdminSitio(usuario).setVisible(true);
         dispose();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
         
         
     }//GEN-LAST:event_jButton1ActionPerformed
