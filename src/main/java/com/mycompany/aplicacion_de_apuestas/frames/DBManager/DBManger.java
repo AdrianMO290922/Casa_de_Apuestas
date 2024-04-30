@@ -4,11 +4,13 @@
  */
 package com.mycompany.aplicacion_de_apuestas.frames.DBManager;
 
+import com.mycompany.aplicacion_de_apuestas.Carrera;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -120,7 +122,7 @@ public class DBManger {
         PreparedStatement ps = connection.prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
+        while (rs.next()) {
             usuario = new Usuario();
             usuario.setId(rs.getInt("id"));
             usuario.setNombre(rs.getString("nombre"));
@@ -134,6 +136,30 @@ public class DBManger {
 
         close();
         return listUsers;
+    }
+    public ArrayList<Carrera> rellenarC(int id_carrera) throws Exception{
+        ArrayList<Carrera> listCar = new ArrayList<>();
+        
+        String sqlCarr = "SELECT * FROM carrera";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sqlCarr);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            Carrera car = new Carrera();
+            car.setId(rs.getInt("id"));
+            car.setNombre(rs.getString("nombre"));
+            car.setMontoApostado(rs.getDouble("monto_apostado"));
+            car.setGanancia(rs.getDouble("ganancia"));
+            car.setDisponible(rs.getBoolean("disponible"));
+            car.setFinalizada(rs.getBoolean("finalizada"));
+            //car.getGanador().setId(rs.getInt("id_ganador"));
+            listCar.add(car);
+        }
+        
+        String sqlRuns = "SELECT Corredor.* FROM Corredor JOIN Carrera_Corredor ON Corredor.id = Carrera_Corredor.id_Corredor WHERE Carrera_Corredor.id_Carrera = ?";
+        close();
+        return listCar;
+        
     }
 
 }//fin de clase

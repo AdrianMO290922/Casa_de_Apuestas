@@ -1,15 +1,31 @@
 package com.mycompany.aplicacion_de_apuestas;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-
-public class Carrera {
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+@Entity
+@Table (name ="carrera")
+public class Carrera implements Serializable{
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "nombre")
     private String nombre;
     private Corredor ganador;
+    @Column(name = "monto_apostado")
     private double montoApostado;
+    @Column(name = "ganancia")
     private double ganancia;
+    @Column(name = "disponible")
     private boolean disponible;
+    @Column(name = "finalizada")
     private boolean finalizada;
     private  ArrayList<Corredor> listRuns = new ArrayList<>();
     private ArrayList<Usuario> listUsers = new ArrayList<>();
@@ -110,7 +126,7 @@ public class Carrera {
 
     @Override
     public String toString() {
-        return "Carrera{" + "id=" + id + ", ganador=" + ganador + ", montoApostado=" + montoApostado + ", ganancia=" + ganancia + ", listRuns=" + listRuns + ", listUsers=" + listUsers + '}';
+        return "Carrera{" + "id=" + id + "nombre=" + nombre+ ", ganador=" + ganador + ", montoApostado=" + montoApostado + ", ganancia=" + ganancia + ", listRuns=" + listRuns + ", listUsers=" + listUsers + '}';
     }
     
     

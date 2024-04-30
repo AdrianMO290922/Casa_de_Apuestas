@@ -354,7 +354,11 @@ public class AdminSitio extends javax.swing.JFrame {
                 listCarr.add(carrera);
 
             }
-            
+            ArrayList<Carrera> bdcarrera = DB.rellenarC(2);
+            System.out.println("ES de longitud: "+bdcarrera.size());
+            for(Carrera car: bdcarrera){
+                System.out.println("Carrera: "+car);
+            }
             System.out.println("Se cargaron las Carreras correctamente");
             //actualizaCorredores();
         } catch (Exception e) {
