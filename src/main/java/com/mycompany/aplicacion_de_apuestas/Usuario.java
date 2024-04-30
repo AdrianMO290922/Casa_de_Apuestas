@@ -34,6 +34,7 @@ public class Usuario implements Serializable{
     private double dinero;
     @Column(name = "quien_soy")
     private int quienSoy;
+    
     public Usuario() {
     }
 

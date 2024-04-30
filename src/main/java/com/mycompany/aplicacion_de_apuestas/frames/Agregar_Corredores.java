@@ -166,9 +166,7 @@ public class Agregar_Corredores extends javax.swing.JFrame {
         // Guardar
 
         boolean band = false;
-        for (Corredor run : carreraP.getListRuns()) {
-            System.out.println("Corredor: " + run);
-        }
+   
         for (Corredor run : carreraP.getListRuns()) {
             if (run.getNombre().equals(corredor.getNombre())) {
                 band = true;

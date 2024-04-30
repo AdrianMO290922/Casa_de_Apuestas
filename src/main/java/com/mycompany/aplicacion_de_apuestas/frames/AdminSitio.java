@@ -298,11 +298,11 @@ public class AdminSitio extends javax.swing.JFrame {
     }//GEN-LAST:event_labelAddCountMouseClicked
 
     private void btnRCorredorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRCorredorActionPerformed
-        
-            new Registro_Corredor(usuario).setVisible(true);
-            actualizaCorredores();
-            dispose();
-        
+
+        new Registro_Corredor(usuario).setVisible(true);
+        actualizaCorredores();
+        dispose();
+
     }//GEN-LAST:event_btnRCorredorActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -310,7 +310,7 @@ public class AdminSitio extends javax.swing.JFrame {
         labelInicial.setText(usuario.getNombre().charAt(0) + "");
         boxCarreras.removeAllItems();
         try {
-        /*    BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json"));
+            /*    BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json"));
             String lectura = null;
             String resultado = "";
             while ((lectura = br.readLine()) != null) {
@@ -320,7 +320,7 @@ public class AdminSitio extends javax.swing.JFrame {
 
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(resultado);
-            */
+             */
             listRuns2.clear();
             listRuns2 = DB.rellenaCorredor();
             /*for (int i = 0; i < jsonArray.size(); i++) {
@@ -347,9 +347,9 @@ public class AdminSitio extends javax.swing.JFrame {
 
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(resultado);
-            */
+             */
             listCarr.clear();
-            
+
             /*for (int i = 0; i < jsonArray.size(); i++) {
                 Carrera carrera = new Gson().fromJson(jsonArray.get(i).toString(), Carrera.class);
                 listCarr.add(carrera);
@@ -363,7 +363,7 @@ public class AdminSitio extends javax.swing.JFrame {
                 
                 System.out.println("Corredor: "+run.getNombre());
             }
-            */
+             */
             System.out.println("Se cargaron las Carreras correctamente");
             //actualizaCorredores();
         } catch (Exception e) {
@@ -376,7 +376,7 @@ public class AdminSitio extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-       /* try {
+        /* try {
             String json = new Gson().toJson(listRuns2);
 
             BufferedWriter bw = new BufferedWriter(new FileWriter("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json", false));
@@ -413,60 +413,106 @@ public class AdminSitio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarCActionPerformed
 
     private void boxCarrerasItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_boxCarrerasItemStateChanged
-        
-        
+
         for (Carrera carrera : listCarr) {
             if (boxCarreras.getSelectedItem().toString().equals(carrera.getNombre())) {
-                
+
                 carreraP = carrera;
                 //listRuns = carrera.getListRuns();
-                try{
-                listRuns = DB.runForCar(carreraP.getId());
-                }catch(Exception ex){
+                try {
+                    listRuns = DB.runForCar(carreraP.getId());
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
                 actualizaCorredores();
             }
         }
         if (carreraP.isDisponible()) {
-            btnInicio.setBackground(new Color(62,156,77));
-            btnFinaliza.setBackground(new Color(85,88,90));
+            btnInicio.setBackground(new Color(62, 156, 77));
+            btnFinaliza.setBackground(new Color(85, 88, 90));
         } else if (carreraP.isFinalizada()) {
-            btnInicio.setBackground(new Color(85,88,90));
-            btnFinaliza.setBackground(new Color(191,12,6));
+            btnInicio.setBackground(new Color(85, 88, 90));
+            btnFinaliza.setBackground(new Color(191, 12, 6));
         } else {
-            btnInicio.setBackground(new Color(85,88,90));
-            btnFinaliza.setBackground(new Color(85,88,90));
+            btnInicio.setBackground(new Color(85, 88, 90));
+            btnFinaliza.setBackground(new Color(85, 88, 90));
         }
     }//GEN-LAST:event_boxCarrerasItemStateChanged
 
     private void btnInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInicioActionPerformed
         carreraP.setDisponible(true);
         carreraP.setFinalizada(false);
-        btnInicio.setBackground(new Color(62,156,77));
-        btnFinaliza.setBackground(new Color(85,88,90));
+        try {
+            DB.DispFinCarr(carreraP.getId(), true, false);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        btnInicio.setBackground(new Color(62, 156, 77));
+        btnFinaliza.setBackground(new Color(85, 88, 90));
 
     }//GEN-LAST:event_btnInicioActionPerformed
 
     private void btnFinalizaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinalizaActionPerformed
         carreraP.setDisponible(false);
         carreraP.setFinalizada(true);
-        btnFinaliza.setBackground(new Color(191,12,6));
-        btnInicio.setBackground(new Color(85,88,90));
+        try {
+            DB.DispFinCarr(carreraP.getId(), false, true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        btnFinaliza.setBackground(new Color(191, 12, 6));
+        btnInicio.setBackground(new Color(85, 88, 90));
+        try {
+            carreraP.setListRuns(DB.runForCar(carreraP.getId()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+     
+        
         int ganador = r.nextInt(carreraP.getListRuns().size()) + 1;
         double cantP;
         for (Corredor corredor : carreraP.getListRuns()) {
-            if (carreraP.getListRuns().indexOf(corredor) + 1 == ganador) {
-                for(Corredor can:listRuns2){
-                    if(corredor.getNombre().equals(can.getNombre())){
-                        can.setCarrerasG(can.getCarrerasG()+1);
+            //if (carreraP.getListRuns().indexOf(corredor) + 1 == ganador) {
+            if (corredor.getId()== ganador) {
+                for (Corredor can : listRuns2) {
+                    System.out.println("Soy corredor tal: "+can +" y llevo tantas ganadas: "+can.getCarrerasG());
+                    if (corredor.getNombre().equals(can.getNombre())) {
+                        can.setCarrerasG(can.getCarrerasG() + 1);
+                        try {
+                            DB.UpdateCG(can.getId(), can.getCarrerasG());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                         break;
                     }
                 }
                 carreraP.setGanador(corredor);
+                try {
+                    DB.UpdateGanador(corredor.getId(), carreraP.getId());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 cantP = (double) corredor.getaFavor();
                 JOptionPane.showMessageDialog(null, "!GANADOR!\n" + "Corredor: " + corredor.getNombre() + " " + corredor.getApellido());
+                int getid[] = null;
                 for (Usuario user : carreraP.getListUsers()) {
+                    try {
+                        getid =DB.getIdApuesta(user.getId(), carreraP.getId());
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    for(int i = 0; i < getid.length;i++ ){
+                        if(getid[i] == ganador){
+                            user.setDinero(((carreraP.getMontoApostado()) - (carreraP.getGanancia())) / cantP);
+                            try {
+                                DB.UpdateDinero(user.getId(),(((carreraP.getMontoApostado()) - (carreraP.getGanancia())) / cantP) );
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            
+                        JOptionPane.showMessageDialog(null, "El usuario: " + user.getNombre() + "\n" + "Gano: " + user.getDinero());
+                        }
+                    }
                     /*if (user.getIdApuesta() == ganador) {
                         user.setDinero(((carreraP.getMontoApostado()) - (carreraP.getGanancia())) / cantP);
                         JOptionPane.showMessageDialog(null, "El usuario: " + user.getNombre() + "\n" + "Gano: " + user.getDinero());
@@ -475,7 +521,8 @@ public class AdminSitio extends javax.swing.JFrame {
                 }
             }
 
-        }
+        }  
+
 
 
     }//GEN-LAST:event_btnFinalizaActionPerformed
@@ -578,7 +625,7 @@ public class AdminSitio extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //Nuevo frame para agregar a todos los participantes
         guardarData();
-        new Agregar_Corredores(usuario,carreraP).setVisible(true);
+        new Agregar_Corredores(usuario, carreraP).setVisible(true);
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
     public void guardarData() {
@@ -616,7 +663,9 @@ public class AdminSitio extends javax.swing.JFrame {
         }
         jPanel1.updateUI();
     }
-
+/**    
+      
+**/
     /**
      * @param args the command line arguments
      */

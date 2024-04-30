@@ -190,6 +190,49 @@ public class DBManger {
         return listCar;
 
     }
+    public ArrayList<Usuario> rellenarCarUser(int id_carrera) throws Exception{
+        String sql = "SELECT Usuario.* FROM Usuario JOIN Carrera_Usuario ON Usuario.id = Carrera_Usuario.id_Usuario WHERE Carrera_Usuario.id_Carrera = ?;";
+        ArrayList<Usuario> listUsers = new ArrayList<>();
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id_carrera);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+           Usuario usuario = new Usuario();
+            usuario.setId(rs.getInt("id"));
+            usuario.setNombre(rs.getString("nombre"));
+            usuario.setApellido(rs.getString("apellido"));
+            usuario.setCuenta(rs.getString("cuenta"));
+            usuario.setPassword(rs.getString("password"));
+            usuario.setQuienSoy(rs.getInt("quien_soy"));
+            usuario.setDinero(rs.getDouble("dinero"));
+            listUsers.add(usuario);
+        }
+        
+        
+        close();
+                
+
+        return listUsers;
+
+    }
+    public int [] getIdApuesta(int id_Usario, int id_carrera) throws Exception{
+        int resultado[] = null, c=0;
+        String sql = "SELECT id_Apuesta FROM Carrera_Usuario WHERE id_Carrera = ? AND id_Usuario = ?;";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ResultSet rs =ps.executeQuery();
+        while(rs.next()){
+            resultado[c] = rs.getInt("id_Apuesta");
+            System.out.println("La c = "+c);
+            c++;
+        }
+
+
+        close();
+        
+        return resultado;
+    }
     public ArrayList<Corredor> runForCar(int id_carrera) throws Exception{
         String sqlRuns = "SELECT Corredor.* FROM Corredor JOIN Carrera_Corredor ON Corredor.id = Carrera_Corredor.id_Corredor WHERE Carrera_Corredor.id_Carrera = ?";
         open();
@@ -241,6 +284,52 @@ public class DBManger {
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, id_carrera);
         ps.setInt(2, id_corredor);
+        ps.executeUpdate();
+        close();
+    }
+    public void DispFinCarr(int id_carrer, boolean D, boolean F) throws Exception{
+        String sql = "UPDATE carrera SET disponible =? ,finalizada=? WHERE id = ?";
+        String sqlNULL = "UPDATE carrera SET disponible =NULL ,finalizada=NULL WHERE id = ?";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sqlNULL);
+        ps.setInt(1, id_carrer);
+        ps.executeUpdate();
+        
+        ps = connection.prepareStatement(sql);
+        ps.setBoolean(1,D);
+        ps.setBoolean(2,F);
+        ps.setInt(3, id_carrer);
+        
+        
+        ps.executeUpdate();
+        close();
+    }
+    public void UpdateCG(int id_corredor, int CG) throws Exception{
+        String sql = "UPDATE corredor SET carreras_G = ? WHERE id = ?";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, CG);
+        ps.setInt(2, id_corredor);
+        ps.executeUpdate();
+        close();
+    }
+    public void UpdateGanador(int id_Gnandor, int id_carr) throws Exception{
+        String sql = "UPDATE carrera SET id_ganador = ? WHERE id = ?";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id_Gnandor);
+        ps.setInt(2, id_carr);
+        ps.executeUpdate();
+        
+        
+        close();
+    }
+    public void UpdateDinero(int id_usuario,double dinero) throws Exception{
+        String sql = "UPDATE usuario SET dinero = ? WHERE id =?";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setDouble(1, dinero);
+        ps.setInt(2, id_usuario);
         ps.executeUpdate();
         close();
     }
