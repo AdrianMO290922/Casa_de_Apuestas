@@ -190,5 +190,59 @@ public class DBManger {
         return listCar;
 
     }
+    public ArrayList<Corredor> runForCar(int id_carrera) throws Exception{
+        String sqlRuns = "SELECT Corredor.* FROM Corredor JOIN Carrera_Corredor ON Corredor.id = Carrera_Corredor.id_Corredor WHERE Carrera_Corredor.id_Carrera = ?";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sqlRuns);
+        ArrayList<Corredor> listRuns  =new ArrayList<>();
+        ps.setInt(1, id_carrera);
+        ResultSet rs = ps.executeQuery();
+          while (rs.next()) {
+              Corredor run = new Corredor();
+              run.setId(rs.getInt("id"));
+              run.setNombre(rs.getString("nombre"));
+              run.setApellido(rs.getString("apellido"));
+              run.setBornDay(rs.getInt("bornYear"));
+              run.setPeso(rs.getDouble("peso"));
+              run.setAltura(rs.getDouble("altura"));
+              run.setQuienSoy(rs.getInt("quien_soy"));
+              run.setCarrerasG(rs.getInt("carreras_G"));
+              run.setaFavor(rs.getInt("aFavor"));
+              listRuns.add(run);
+                }
+        close();
+        return listRuns;
+    }
+    public ArrayList<Corredor> rellenaCorredor() throws Exception{
+        String sql = "SELECT * FROM corredor";
+        open();
+        ArrayList<Corredor> listRuns = new ArrayList<>();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            Corredor run = new Corredor();
+            run.setId(rs.getInt("id"));
+              run.setNombre(rs.getString("nombre"));
+              run.setApellido(rs.getString("apellido"));
+              run.setBornDay(rs.getInt("bornYear"));
+              run.setPeso(rs.getDouble("peso"));
+              run.setAltura(rs.getDouble("altura"));
+              run.setQuienSoy(rs.getInt("quien_soy"));
+              run.setCarrerasG(rs.getInt("carreras_G"));
+              run.setaFavor(rs.getInt("aFavor"));
+              listRuns.add(run);
+        }
+        close();
+        return listRuns;
+    }
+    public void addRunCarr(int id_carrera, int id_corredor) throws Exception{
+        String sql = "INSERT INTO carrera_corredor (id_Carrera,id_Corredor) VALUES(?,?)";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id_carrera);
+        ps.setInt(2, id_corredor);
+        ps.executeUpdate();
+        close();
+    }
 
 }//fin de clase

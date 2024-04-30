@@ -310,7 +310,7 @@ public class AdminSitio extends javax.swing.JFrame {
         labelInicial.setText(usuario.getNombre().charAt(0) + "");
         boxCarreras.removeAllItems();
         try {
-            BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json"));
+        /*    BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json"));
             String lectura = null;
             String resultado = "";
             while ((lectura = br.readLine()) != null) {
@@ -320,13 +320,14 @@ public class AdminSitio extends javax.swing.JFrame {
 
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(resultado);
-
+            */
             listRuns2.clear();
-            for (int i = 0; i < jsonArray.size(); i++) {
+            listRuns2 = DB.rellenaCorredor();
+            /*for (int i = 0; i < jsonArray.size(); i++) {
                 Corredor corredor = new Gson().fromJson(jsonArray.get(i).toString(), Corredor.class);
                 listRuns2.add(corredor);
 
-            }
+            }*/
 
             System.out.println("Se cargaron las Carrers correctamente");
             actualizaCorredores();
@@ -336,7 +337,7 @@ public class AdminSitio extends javax.swing.JFrame {
 
         /////Carreras/////////////////////////////////////////////////////////////////////////////////////
         try {
-            BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Carreras.json"));
+            /*BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Carreras.json"));
             String lectura = null;
             String resultado = "";
             while ((lectura = br.readLine()) != null) {
@@ -346,7 +347,7 @@ public class AdminSitio extends javax.swing.JFrame {
 
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(resultado);
-
+            */
             listCarr.clear();
             
             /*for (int i = 0; i < jsonArray.size(); i++) {
@@ -375,7 +376,7 @@ public class AdminSitio extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        try {
+       /* try {
             String json = new Gson().toJson(listRuns2);
 
             BufferedWriter bw = new BufferedWriter(new FileWriter("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json", false));
@@ -395,7 +396,7 @@ public class AdminSitio extends javax.swing.JFrame {
             System.out.println("Se guardaron las Carrers correctamente");
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }//GEN-LAST:event_formWindowClosing
 
     private void labelSesionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelSesionMouseClicked
@@ -412,10 +413,18 @@ public class AdminSitio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarCActionPerformed
 
     private void boxCarrerasItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_boxCarrerasItemStateChanged
+        
+        
         for (Carrera carrera : listCarr) {
             if (boxCarreras.getSelectedItem().toString().equals(carrera.getNombre())) {
-                listRuns = carrera.getListRuns();
+                
                 carreraP = carrera;
+                //listRuns = carrera.getListRuns();
+                try{
+                listRuns = DB.runForCar(carreraP.getId());
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
                 actualizaCorredores();
             }
         }
