@@ -5,6 +5,7 @@
 package com.mycompany.aplicacion_de_apuestas.frames.DBManager;
 
 import com.mycompany.aplicacion_de_apuestas.Carrera;
+import com.mycompany.aplicacion_de_apuestas.Corredor;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -82,7 +83,8 @@ public class DBManger {
         close();
         return resultados;
     }
-     public int addRun(String name, String lastName, int bornYear, double peso, double altura, int quienSoy, int carrerasG ) throws Exception {
+
+    public int addRun(String name, String lastName, int bornYear, double peso, double altura, int quienSoy, int carrerasG) throws Exception {
         int resultados = 0;
         int d = 0;
         String sql = "INSERT INTO corredor (nombre, apellido, bornYear, peso, altura, quien_soy, carreras_G) VALUES(?,?,?,?,?,?,?)";
@@ -99,10 +101,11 @@ public class DBManger {
         close();
         return resultados;
     }
-     public int addCarrer(String name)throws Exception{
-         int resultados = 0;
-         String sql = "INSERT INTO carrera (nombre, monto_apostado, ganancia, disponible, finalizada)VALUES (?,?, ?,?, ?)";
-          open();
+
+    public int addCarrer(String name) throws Exception {
+        int resultados = 0;
+        String sql = "INSERT INTO carrera (nombre, monto_apostado, ganancia, disponible, finalizada)VALUES (?,?, ?,?, ?)";
+        open();
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, name);
         ps.setDouble(2, 0.0);
@@ -111,8 +114,8 @@ public class DBManger {
         ps.setBoolean(5, false);
         resultados = ps.executeUpdate();
         close();
-         return resultados;
-     }
+        return resultados;
+    }
 
     public ArrayList<Usuario> rellenarU() throws Exception {
         String sql = "SELECT * FROM usuario";
@@ -137,14 +140,16 @@ public class DBManger {
         close();
         return listUsers;
     }
-    public ArrayList<Carrera> rellenarC(int id_carrera) throws Exception{
+
+    public ArrayList<Carrera> rellenarC(int id_carrera) throws Exception {
         ArrayList<Carrera> listCar = new ArrayList<>();
-        
+        ArrayList<Corredor> listRuns  =new ArrayList<>();
+
         String sqlCarr = "SELECT * FROM carrera";
         open();
         PreparedStatement ps = connection.prepareStatement(sqlCarr);
         ResultSet rs = ps.executeQuery();
-        while(rs.next()){
+        while (rs.next()) {
             Carrera car = new Carrera();
             car.setId(rs.getInt("id"));
             car.setNombre(rs.getString("nombre"));
@@ -155,11 +160,35 @@ public class DBManger {
             //car.getGanador().setId(rs.getInt("id_ganador"));
             listCar.add(car);
         }
-        
+
         String sqlRuns = "SELECT Corredor.* FROM Corredor JOIN Carrera_Corredor ON Corredor.id = Carrera_Corredor.id_Corredor WHERE Carrera_Corredor.id_Carrera = ?";
+        ps = connection.prepareStatement(sqlRuns);
+        ps.setInt(1, id_carrera);
+        rs = ps.executeQuery();
+          while (rs.next()) {
+              Corredor run = new Corredor();
+              run.setId(rs.getInt("id"));
+              run.setNombre(rs.getString("nombre"));
+              run.setApellido(rs.getString("apellido"));
+              run.setBornDay(rs.getInt("bornYear"));
+              run.setPeso(rs.getDouble("peso"));
+              run.setAltura(rs.getDouble("altura"));
+              run.setQuienSoy(rs.getInt("quien_soy"));
+              run.setCarrerasG(rs.getInt("carreras_G"));
+              run.setaFavor(rs.getInt("aFavor"));
+              listRuns.add(run);
+                }
+        
+        
+        
+        for (Carrera carreraP : listCar) {
+            if (carreraP.getId() == id_carrera) {
+              carreraP.setListRuns(listRuns);
+            }
+        }
         close();
         return listCar;
-        
+
     }
 
 }//fin de clase

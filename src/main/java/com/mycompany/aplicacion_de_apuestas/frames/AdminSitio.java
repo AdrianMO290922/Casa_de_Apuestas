@@ -349,16 +349,20 @@ public class AdminSitio extends javax.swing.JFrame {
 
             listCarr.clear();
             
-            for (int i = 0; i < jsonArray.size(); i++) {
+            /*for (int i = 0; i < jsonArray.size(); i++) {
                 Carrera carrera = new Gson().fromJson(jsonArray.get(i).toString(), Carrera.class);
                 listCarr.add(carrera);
 
+            }*/
+            listCarr = DB.rellenarC(1);
+            /*ArrayList<Carrera> bdcarrera = DB.rellenarC(1);
+            System.out.println("Carrera: "+ bdcarrera.get(0).getNombre());
+            System.out.println("Corredores");
+            for(Corredor run: bdcarrera.get(0).getListRuns()){
+                
+                System.out.println("Corredor: "+run.getNombre());
             }
-            ArrayList<Carrera> bdcarrera = DB.rellenarC(2);
-            System.out.println("ES de longitud: "+bdcarrera.size());
-            for(Carrera car: bdcarrera){
-                System.out.println("Carrera: "+car);
-            }
+            */
             System.out.println("Se cargaron las Carreras correctamente");
             //actualizaCorredores();
         } catch (Exception e) {
