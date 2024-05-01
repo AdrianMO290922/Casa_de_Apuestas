@@ -14,6 +14,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.mycompany.aplicacion_de_apuestas.Carrera;
 import com.mycompany.aplicacion_de_apuestas.Corredor;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
+import com.mycompany.aplicacion_de_apuestas.frames.DBManager.DBManger;
 import java.awt.Desktop;
 import java.awt.GridLayout;
 import java.io.BufferedReader;
@@ -45,6 +46,7 @@ public class Registro_Apuesta extends javax.swing.JFrame {
     Usuario usuario;
     Corredor run;
     int IDC;
+    DBManger DB = new DBManger();
 
     public Registro_Apuesta() {
         initComponents();
@@ -304,7 +306,7 @@ public class Registro_Apuesta extends javax.swing.JFrame {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         jComboBox1.removeAllItems();
         try {
-            BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json"));
+           /* BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json"));
             String lectura = null;
             String resultado = "";
             while ((lectura = br.readLine()) != null) {
@@ -314,13 +316,15 @@ public class Registro_Apuesta extends javax.swing.JFrame {
 
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(resultado);
-
+            */
             listRuns2.clear();
-            for (int i = 0; i < jsonArray.size(); i++) {
+            listRuns2 = DB.rellenaCorredor();
+            /*for (int i = 0; i < jsonArray.size(); i++) {
                 Corredor corredor = new Gson().fromJson(jsonArray.get(i).toString(), Corredor.class);
                 listRuns2.add(corredor);
 
             }
+            */
             System.out.println("Se cargaron los Runscorrectamente");
             //actualizaCorredores();
         } catch (Exception e) {
@@ -331,7 +335,7 @@ public class Registro_Apuesta extends javax.swing.JFrame {
         }*/
         /////Carreras/////////////////////////////////////////////////////////////////////////////////////
         try {
-            BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Carreras.json"));
+            /*BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Carreras.json"));
             String lectura = null;
             String resultado = "";
             while ((lectura = br.readLine()) != null) {
@@ -341,17 +345,19 @@ public class Registro_Apuesta extends javax.swing.JFrame {
 
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(resultado);
-
+*/
             listCarr.clear();
-            for (int i = 0; i < jsonArray.size(); i++) {
+            listCarr = DB.rellenarC(1);
+            /*for (int i = 0; i < jsonArray.size(); i++) {
                 Carrera carrera = new Gson().fromJson(jsonArray.get(i).toString(), Carrera.class);
                 listCarr.add(carrera);
 
-            }
+            }*/
             System.out.println("Se cargaron las Carreras correctamente");
             for (Carrera carrera : listCarr) {
                 if (carrera.getId() == IDC) {
                     carreraP = carrera;
+                    carreraP.setListRuns(DB.runForCar(carreraP.getId()));
                 }
             }
             listRuns = carreraP.getListRuns();
@@ -365,7 +371,7 @@ public class Registro_Apuesta extends javax.swing.JFrame {
         }
         ////////////////////////////////////Usuario//////////////////////////////////////////////////
         try {
-            BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Usuarios.json"));
+            /*BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Usuarios.json"));
             String lectura = null;
             String resultado = "";
             while ((lectura = br.readLine()) != null) {
@@ -385,9 +391,13 @@ public class Registro_Apuesta extends javax.swing.JFrame {
                     Usuario U = (Usuario)persona;
                 listUsers.add(U);
                 }*/
+            /*
                 listUsers.add(user);
 
             }
+            */
+            listUsers.clear();
+            listUsers = DB.rellenarU();
             System.out.println("Se cargaron los Usuarios correctamente");
             //actualizaCategorias();
         } catch (Exception e) {
@@ -416,15 +426,28 @@ public class Registro_Apuesta extends javax.swing.JFrame {
 
         for (Carrera carrera : listCarr) {
             if (carrera.getId() == IDC) {
-                //carrera.setListRuns(listRuns);
+                try {
+                    //carrera.setListRuns(listRuns);
+                    carrera.setListRuns(DB.runForCar(carrera.getId()));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 for (Corredor corredor : carrera.getListRuns()) {
                     if ((corredor.getNombre() + " " + corredor.getApellido()).equals(jComboBox1.getSelectedItem().toString())) {
                         corredor.setaFavor(1 + corredor.getaFavor());
+                        try {
+                            DB.sumAfavor(corredor.getaFavor(),corredor.getId());
+                        
                         carrera.setGanancia((Double.parseDouble(txtMonto.getText()) * 0.10) + carrera.getGanancia());
                         carrera.setMontoApostado((Double.parseDouble(txtMonto.getText())) + carrera.getMontoApostado());
                         carrera.getListUsers().add(usuario);
+                        DB.GanMon(carrera.getGanancia(),carrera.getMontoApostado(),carrera.getId());
+                        DB.addUaCarr(carrera.getId(), usuario.getId(), corredor.getId());
                         //usuario.setIdApuesta((carrera.getListRuns().indexOf(corredor)) + 1);//BASE DE DATOS
                         System.out.println("El id que se le tuvo que obtener es el siguiente: " + ((carrera.getListRuns().indexOf(corredor)) + 1));
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
 

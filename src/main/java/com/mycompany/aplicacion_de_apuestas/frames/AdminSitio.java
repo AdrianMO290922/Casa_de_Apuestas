@@ -47,6 +47,8 @@ public class AdminSitio extends javax.swing.JFrame {
     Usuario usuario;
     DBManger DB = new DBManger();
     Random r = new Random();
+    int winner;
+    int[] idUW = null;
 
     public AdminSitio() {
         initComponents();
@@ -462,20 +464,33 @@ public class AdminSitio extends javax.swing.JFrame {
         }
         btnFinaliza.setBackground(new Color(191, 12, 6));
         btnInicio.setBackground(new Color(85, 88, 90));
+        int arr[] = null;
         try {
             carreraP.setListRuns(DB.runForCar(carreraP.getId()));
+            carreraP.setListUsers(DB.rellenarCarUser(carreraP.getId()));
+            arr = DB.randomApuesta(carreraP.getId());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-     
-        
-        int ganador = r.nextInt(carreraP.getListRuns().size()) + 1;
-        double cantP;
+        int ganador = 0;
+        for (int i = 0; i < arr.length; i++) {
+            System.out.println("ID_Apuesta del arreglo neuvecito: " + arr[i]);
+        }
+        ganador = r.nextInt(arr.length - 1);
+        System.out.println("Primer G " + ganador);
+        ganador = arr[ganador];
+        winner = ganador;
+        System.out.println("Second G: " + ganador);
+
+        double cantP = 1;
+        System.out.println("EL ID GANADOR ES: " + ganador);
+        ///////////////////////////////////forr de corredor
         for (Corredor corredor : carreraP.getListRuns()) {
-            //if (carreraP.getListRuns().indexOf(corredor) + 1 == ganador) {
-            if (corredor.getId()== ganador) {
+            System.out.println("Soy corredor tal: " + corredor.getNombre() + " y llevo tantas ganadas: " + corredor.getCarrerasG() + " con id_: " + corredor.getId());
+            if (corredor.getId() == ganador) {
+                System.out.println("SI yo soy winner");
                 for (Corredor can : listRuns2) {
-                    System.out.println("Soy corredor tal: "+can +" y llevo tantas ganadas: "+can.getCarrerasG());
+                    System.out.println("Soy corredor tal: " + can.getNombre() + " y llevo tantas ganadas: " + can.getCarrerasG());
                     if (corredor.getNombre().equals(can.getNombre())) {
                         can.setCarrerasG(can.getCarrerasG() + 1);
                         try {
@@ -493,37 +508,44 @@ public class AdminSitio extends javax.swing.JFrame {
                     ex.printStackTrace();
                 }
                 cantP = (double) corredor.getaFavor();
+                System.out.println("CANTIDAD DE APUESTAS: " + cantP);
                 JOptionPane.showMessageDialog(null, "!GANADOR!\n" + "Corredor: " + corredor.getNombre() + " " + corredor.getApellido());
-                int getid[] = null;
-                for (Usuario user : carreraP.getListUsers()) {
+            }//IF para saber si si es el ganador
+
+        }///Cierra el gigachat
+
+        ///////////////////////////////////////////////////Hasta aqui ocupo el for
+        int getid[] = null;
+
+        System.out.println("Carrera P : " + carreraP.getListUsers());
+        //Otro for para actualizar el User ganador////////////////////////////////77
+        for (Usuario user : carreraP.getListUsers()) {
+            try {
+                System.out.println("Si entro al ciclo primero");
+                getid = DB.getIdApuesta(user.getId(), carreraP.getId());//carreraP.getId()
+                System.out.println("Ejecuto el query se supone con " + getid);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            System.out.println("USERNAME: " + user.getNombre() + "");
+            System.out.println("ID_GANADOR :" + ganador);
+            for (int i = 0; i < getid.length; i++) {
+                System.out.println("I_apuestas" + getid[i]);
+                if (getid[i] == ganador) {
+                    user.setDinero(((carreraP.getMontoApostado()) - (carreraP.getGanancia())) / cantP);
                     try {
-                        getid =DB.getIdApuesta(user.getId(), carreraP.getId());
+                        System.out.println("MONTO DE LA CARRERA: " + carreraP.getMontoApostado() + " Y UNa ganancia de : " + carreraP.getGanancia());
+                        DB.UpdateDinero(user.getId(), (((carreraP.getMontoApostado()) - (carreraP.getGanancia())) / cantP));
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    for(int i = 0; i < getid.length;i++ ){
-                        if(getid[i] == ganador){
-                            user.setDinero(((carreraP.getMontoApostado()) - (carreraP.getGanancia())) / cantP);
-                            try {
-                                DB.UpdateDinero(user.getId(),(((carreraP.getMontoApostado()) - (carreraP.getGanancia())) / cantP) );
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                            
-                        JOptionPane.showMessageDialog(null, "El usuario: " + user.getNombre() + "\n" + "Gano: " + user.getDinero());
-                        }
-                    }
-                    /*if (user.getIdApuesta() == ganador) {
-                        user.setDinero(((carreraP.getMontoApostado()) - (carreraP.getGanancia())) / cantP);
-                        JOptionPane.showMessageDialog(null, "El usuario: " + user.getNombre() + "\n" + "Gano: " + user.getDinero());
-                    }*///BASE DE DATOS
 
-                }
-            }
-
-        }  
-
-
+                    JOptionPane.showMessageDialog(null, "El usuario: " + user.getNombre() + "\n" + "Gano: " + user.getDinero());
+                }//if si es ganador o no ese id apuesta de ese usuario
+            }//fin del id
+        }//fin del for
+        ////////////////////fin del otro for
+        System.out.println("Al chile ya suicidate ni hace nada esta madre");
 
     }//GEN-LAST:event_btnFinalizaActionPerformed
 
@@ -536,6 +558,7 @@ public class AdminSitio extends javax.swing.JFrame {
             Paragraph parrafo = new Paragraph("------------------------------------------------------ Historial ------------------------------------------------------");
             parrafo.setBold();
             doc.add(parrafo);
+
             for (Carrera carrera : listCarr) {
                 if (carrera.isFinalizada()) {
                     parrafo = new Paragraph("------------------------- Carrrera " + carrera.getNombre() + "----");
@@ -545,13 +568,18 @@ public class AdminSitio extends javax.swing.JFrame {
                     parrafo = new Paragraph("--Usuarios Ganadores:--");
                     parrafo.setBold();
                     doc.add(parrafo);
-                    for (Usuario user : carrera.getListUsers()) {
-                        if (user.getDinero() > 0) {
+
+                    try {
+
+                        ArrayList<Usuario> listWiners = DB.listUWiners(carrera.getId());
+                        for (Usuario user : listWiners) {
                             doc.add(new Paragraph("Usuario Ganador : " + user.getNombre()));
                             doc.add(new Paragraph("Dinero ganado: " + user.getDinero()));
                         }
-
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
+
                     parrafo = new Paragraph("--------------------------------");
                     parrafo.setBold();
                     doc.add(parrafo);
@@ -574,8 +602,10 @@ public class AdminSitio extends javax.swing.JFrame {
 
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
+
         } catch (IOException ex) {
-            Logger.getLogger(Registro_Apuesta.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Registro_Apuesta.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         //Descargado en Excel
         try {
@@ -591,12 +621,22 @@ public class AdminSitio extends javax.swing.JFrame {
 
                             case 0:
                                 excel.append("--Usuarios--,\n");
-                                for (Usuario user : carrera.getListUsers()) {
+                                try {
+
+                                    ArrayList<Usuario> listWiners = DB.listUWiners(carrera.getId());
+                                    for (Usuario user : listWiners) {
+                                        excel.append("Usuario Ganador:, " + user.getNombre() + "\n");
+                                        excel.append("Dinero ganado:, " + user.getDinero() + "\n");
+                                    }
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                                /*for (Usuario user : carrera.getListUsers()) {
                                     if (user.getDinero() > 0) {
                                         excel.append("Usuario Ganador:, " + user.getNombre() + "\n");
                                         excel.append("Dinero ganado:, " + user.getDinero() + "\n");
                                     }
-                                }
+                                }*/
                                 break;
                             case 2:
                                 excel.append("Monto Apostado:," + carrera.getMontoApostado() + "\n");
@@ -663,9 +703,11 @@ public class AdminSitio extends javax.swing.JFrame {
         }
         jPanel1.updateUI();
     }
-/**    
-      
-**/
+
+    /**
+     * *
+     *
+     */
     /**
      * @param args the command line arguments
      */
@@ -680,16 +722,24 @@ public class AdminSitio extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AdminSitio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AdminSitio.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AdminSitio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AdminSitio.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AdminSitio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AdminSitio.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AdminSitio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AdminSitio.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 

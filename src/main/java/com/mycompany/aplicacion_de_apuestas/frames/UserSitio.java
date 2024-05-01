@@ -8,12 +8,15 @@ import com.google.gson.Gson;
 import com.mycompany.aplicacion_de_apuestas.Carrera;
 import com.mycompany.aplicacion_de_apuestas.Corredor;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
+import com.mycompany.aplicacion_de_apuestas.frames.DBManager.DBManger;
 import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -27,10 +30,10 @@ public class UserSitio extends javax.swing.JFrame {
     ArrayList<Corredor> listRuns = new ArrayList<>();
     ArrayList<Corredor> listRuns2 = new ArrayList<>();
     private GridLayout grid = new GridLayout(1, 1);
-     ArrayList<Carrera> listCarr = new ArrayList<>();
+    ArrayList<Carrera> listCarr = new ArrayList<>();
     Carrera carreraP;
     Usuario usuario;
-    
+    DBManger DB = new DBManger();
 
     public UserSitio() {
         initComponents();
@@ -43,7 +46,7 @@ public class UserSitio extends javax.swing.JFrame {
         jPanel1.setLayout(grid);
         setLocationRelativeTo(null);
         this.usuario = usuario;
-       // System.out.println("Mi idaP: "+usuario.getIdApuesta());BASE DE DATOS
+        // System.out.println("Mi idaP: "+usuario.getIdApuesta());BASE DE DATOS
     }
 
     /**
@@ -231,7 +234,7 @@ public class UserSitio extends javax.swing.JFrame {
         labelDinero.setText("$" + usuario.getDinero());
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json"));
+            /* BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Corredores.json"));
             String lectura = null;
             String resultado = "";
             while ((lectura = br.readLine()) != null) {
@@ -241,21 +244,22 @@ public class UserSitio extends javax.swing.JFrame {
 
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(resultado);
-
+             */
             listRuns2.clear();
-            for (int i = 0; i < jsonArray.size(); i++) {
+            listRuns2 = DB.rellenaCorredor();
+            /*for (int i = 0; i < jsonArray.size(); i++) {
                 Corredor corredor = new Gson().fromJson(jsonArray.get(i).toString(), Corredor.class);
                 listRuns2.add(corredor);
 
-            }
+            }*/
             System.out.println("Se cargaron los Runscorrectamente");
             actualizaCorredores();
         } catch (Exception e) {
             e.printStackTrace();
         }
-         /////Carreras/////////////////////////////////////////////////////////////////////////////////////
-         try {
-            BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Carreras.json"));
+        /////Carreras/////////////////////////////////////////////////////////////////////////////////////
+        try {
+            /*BufferedReader br = new BufferedReader(new FileReader("C:/Users/adria/Documents/Archivos del Proyecto JSON/Carreras.json"));
             String lectura = null;
             String resultado = "";
             while ((lectura = br.readLine()) != null) {
@@ -265,25 +269,27 @@ public class UserSitio extends javax.swing.JFrame {
 
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(resultado);
-
+             */
             listCarr.clear();
-            
-            for (int i = 0; i < jsonArray.size(); i++) {
+            listCarr = DB.rellenarC(1);
+
+            /*for (int i = 0; i < jsonArray.size(); i++) {
                 Carrera carrera = new Gson().fromJson(jsonArray.get(i).toString(),Carrera.class);
                 listCarr.add(carrera);
 
             }
-             System.out.println("Se cargaron las Carreras correctamente");
+             */
+            System.out.println("Se cargaron las Carreras correctamente");
             //actualizaCorredores();
         } catch (Exception e) {
             e.printStackTrace();
         }
-         for(Carrera carrera:listCarr){
-             //boxCarreras.addItem(String.valueOf(carrera.getId()));
-             
-             boxCarreras.addItem(carrera.getNombre());
-         }
-         
+        for (Carrera carrera : listCarr) {
+            //boxCarreras.addItem(String.valueOf(carrera.getId()));
+
+            boxCarreras.addItem(carrera.getNombre());
+        }
+
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -297,7 +303,7 @@ public class UserSitio extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-         /////////////////////////////////////////////Carreras/////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////Carreras/////////////////////////////////////////////////////////////
         try {
             String json = new Gson().toJson(listCarr);
 
@@ -311,49 +317,103 @@ public class UserSitio extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void btnRApuestaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRApuestaActionPerformed
-        if(carreraP.isDisponible()){
-        guardarData();
-        usuario.setDinero(0);
-        new Registro_Apuesta(usuario,carreraP.getId()).setVisible(true);
-        dispose();
-        }else if(carreraP.isFinalizada()){
+        if (carreraP.isDisponible()) {
+            guardarData();
+            usuario.setDinero(0);
+            new Registro_Apuesta(usuario, carreraP.getId()).setVisible(true);
+            dispose();
+        } else if (carreraP.isFinalizada()) {
             JOptionPane.showMessageDialog(null, "Lo sentimos esta carrera ya fue finalizada");
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "No se recomienda apostar, aun hay corredores por asignar");
         }
     }//GEN-LAST:event_btnRApuestaActionPerformed
 
     private void boxCarrerasItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_boxCarrerasItemStateChanged
-        for(Carrera carrera:listCarr){
-            
-            if(boxCarreras.getSelectedItem().toString().equals(carrera.getNombre())){
-                listRuns = carrera.getListRuns();
+        for (Carrera carrera : listCarr) {
+
+            if (boxCarreras.getSelectedItem().toString().equals(carrera.getNombre())) {
+                //listRuns = carrera.getListRuns();
                 carreraP = carrera;
+                try {
+                    listRuns = DB.runForCar(carreraP.getId());
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 actualizaCorredores();
-                if(carreraP.isFinalizada()){
+                if (carreraP.isFinalizada()) {///es iin if larguisimo
                     labelisFinalizada.setText("Carrera Finalizada");
-                    for(Usuario user: carreraP.getListUsers()){
+
+                    try {
+                        //////////////////////////////////////////////////7
+                        /*for(Usuario user: carreraP.getListUsers()){
                         if(user.getCuenta().equals(usuario.getCuenta())){
-                            if(user.getDinero()>0){
-                            JOptionPane.showMessageDialog(null, "Ganaste en la carrera: "+carreraP.getNombre()+"\n" + "Gano: "+carreraP.getGanador().getNombre()+"\n"+"Gano: " +user.getDinero());
-                            //usuario.setDinero(user.getDinero()+usuario.getDinero());
-                            usuario.setDinero(user.getDinero());
-                            labelDinero.setText("$"+usuario.getDinero());
-                            break;
-                            }else{
-                                //JOptionPane.showMessageDialog(null, "Finalizo la Carrera: "+carreraP.getNombre()+"\n" +"Gano: "+carreraP.getNombre());
-                                labelisFinalizada.setText("Carrera Finalizada\n"+" Gano: "+carreraP.getGanador().getNombre());
-                            }
-                            
+                        if(carreraP.getGanador().getId() == 1){
+                        
                         }
+                        /////////////////////////////Hasta aqui//////////////////////////////////////////
+                        if(user.getDinero()>0){
+                        JOptionPane.showMessageDialog(null, "Ganaste en la carrera: "+carreraP.getNombre()+"\n" + "Gano: "+carreraP.getGanador().getNombre()+"\n"+"Gano: " +user.getDinero());
+                        //usuario.setDinero(user.getDinero()+usuario.getDinero());
+                        usuario.setDinero(user.getDinero());
+                        labelDinero.setText("$"+usuario.getDinero());
+                        break;
+                        }else{
+                        //JOptionPane.showMessageDialog(null, "Finalizo la Carrera: "+carreraP.getNombre()+"\n" +"Gano: "+carreraP.getNombre());
+                        labelisFinalizada.setText("Carrera Finalizada\n"+" Gano: "+carreraP.getGanador().getNombre());
+                        }
+                        
+                        }
+                        }*/
+                        ///////////////////////////////////////////////////////////////////////////////
+                        carreraP.setListUsers(DB.rellenarCarUser(carreraP.getId()));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+
                     }
-                }else{
+                    int getid[] = null;
+                    for (Usuario user : carreraP.getListUsers()) {
+                        if (user.getNombre().equals(usuario.getNombre())) {
+                            System.out.println("USUARIO DE LA CARRERA: " + user.getNombre());
+                            try {
+                                System.out.println("id_user: " + user.getId() + " id_carrera: " + carreraP.getNombre());
+                                getid = DB.getIdApuesta(user.getId(), carreraP.getId());
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            System.out.println("SI hubo: " + getid.length);
+                            try {
+                                carreraP.setGanador(DB.retGan(carreraP.getId()));
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            for (int i = 0; i < getid.length; i++) {
+
+                                if (getid[i] == carreraP.getGanador().getId()) {
+
+                                    System.out.println("ID GANADORES:" + getid[i]);
+
+                                    JOptionPane.showMessageDialog(null, "Ganaste en la carrera: " + carreraP.getNombre() + "\n" + "Gano: " + carreraP.getGanador().getNombre() + "\n" + "Gano: " + user.getDinero());
+                                    usuario.setDinero(user.getDinero());
+                                    labelDinero.setText("$" + usuario.getDinero());
+                                } else {
+                                    labelisFinalizada.setText("Carrera Finalizada\n" + " Gano: " + carreraP.getGanador().getNombre());
+                                }
+                                System.out.println("USUARIO: " + user.getNombre());
+                            }//Aqui cierra el for de la premiacion
+                        }
+
+                    }///Aqui cierrs el for de usuarios
+
+                } else {///muy muy largo
                     labelisFinalizada.setText("");
                 }
             }
-            
+
         }//fin del for
     }//GEN-LAST:event_boxCarrerasItemStateChanged
+    
     public void actualizaCorredores() {
         jPanel1.removeAll();
         grid.setRows(listRuns.size());
@@ -365,6 +425,7 @@ public class UserSitio extends javax.swing.JFrame {
         }
         jPanel1.updateUI();
     }
+
     public void guardarData() {
         try {
             String json = new Gson().toJson(listRuns2);
@@ -377,7 +438,7 @@ public class UserSitio extends javax.swing.JFrame {
             e.printStackTrace();
         }
         ///////////////////////////Carreras/////////////////////////////////////
-      try {
+        try {
             String json = new Gson().toJson(listCarr);
 
             BufferedWriter bw = new BufferedWriter(new FileWriter("C:/Users/adria/Documents/Archivos del Proyecto JSON/Carreras.json", false));
@@ -388,6 +449,7 @@ public class UserSitio extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+
     /**
      * @param args the command line arguments
      */

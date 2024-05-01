@@ -7,6 +7,7 @@ package com.mycompany.aplicacion_de_apuestas.frames.DBManager;
 import com.mycompany.aplicacion_de_apuestas.Carrera;
 import com.mycompany.aplicacion_de_apuestas.Corredor;
 import com.mycompany.aplicacion_de_apuestas.Usuario;
+import com.mysql.cj.xdevapi.PreparableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -216,18 +217,61 @@ public class DBManger {
         return listUsers;
 
     }
-    public int [] getIdApuesta(int id_Usario, int id_carrera) throws Exception{
-        int resultado[] = null, c=0;
-        String sql = "SELECT id_Apuesta FROM Carrera_Usuario WHERE id_Carrera = ? AND id_Usuario = ?;";
+    public int[] randomApuesta(int id_carrer) throws Exception{
+        int resultado[],c=0;
+         String sql = "SELECT count(id_Apuesta) AS size FROM Carrera_Usuario WHERE id_Carrera = ?";
+        
         open();
         PreparedStatement ps = connection.prepareStatement(sql);
-        ResultSet rs =ps.executeQuery();
+        ps.setInt(1, id_carrer);
+        ResultSet rs = ps.executeQuery();
+        
+        if(rs.next()){
+            resultado = new int[rs.getInt("size")];
+        }else{
+            resultado = new int[1];
+        }
+            String sql2 = "SELECT id_Apuesta FROM Carrera_Usuario WHERE id_Carrera = ? GROUP BY id_Apuesta";
+        ps = connection.prepareStatement(sql2);
+        ps.setInt(1, id_carrer);
+        rs = ps.executeQuery();
         while(rs.next()){
+            resultado[c] = rs.getInt("id_Apuesta");
+            c++;
+        }
+        close();
+
+        return resultado;
+
+    }
+    public int [] getIdApuesta(int id_Usario, int id_carrera) throws Exception{
+        int resultado[], c=0;
+        
+        String sql = "SELECT count(id_Apuesta) AS size FROM Carrera_Usuario WHERE id_Carrera = ? AND id_Usuario = ?";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,id_carrera);
+        ps.setInt(2,id_Usario);
+        ResultSet rs =ps.executeQuery();
+        if(rs.next()){
+            resultado = new int[rs.getInt("size")];
+            
+        }else{
+            resultado = new int[1];
+        }
+        
+        String sql2 = "SELECT id_Apuesta FROM Carrera_Usuario WHERE id_Carrera = ? AND id_Usuario = ?";
+        ps = connection.prepareStatement(sql2);
+        ps.setInt(1,id_carrera);
+        ps.setInt(2,id_Usario);
+        rs = ps.executeQuery();
+        while(rs.next()){
+            System.out.println("Se supone que lee");
             resultado[c] = rs.getInt("id_Apuesta");
             System.out.println("La c = "+c);
             c++;
         }
-
+        System.out.println("si este sigue mamo");
 
         close();
         
@@ -324,6 +368,31 @@ public class DBManger {
         
         close();
     }
+    public Corredor retGan(int id_carrer) throws Exception{
+        Corredor run =new Corredor();
+        String sql ="SELECT Corredor.* FROM Corredor JOIN Carrera ON Corredor.id = Carrera.id_Ganador WHERE Carrera.id = ?;";
+        
+
+
+
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,id_carrer);
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()){
+              run.setId(rs.getInt("id"));
+              run.setNombre(rs.getString("nombre"));
+              run.setApellido(rs.getString("apellido"));
+              run.setBornDay(rs.getInt("bornYear"));
+              run.setPeso(rs.getDouble("peso"));
+              run.setAltura(rs.getDouble("altura"));
+              run.setQuienSoy(rs.getInt("quien_soy"));
+              run.setCarrerasG(rs.getInt("carreras_G"));
+              run.setaFavor(rs.getInt("aFavor"));
+        }
+        close();
+        return run;
+    }
     public void UpdateDinero(int id_usuario,double dinero) throws Exception{
         String sql = "UPDATE usuario SET dinero = ? WHERE id =?";
         open();
@@ -333,5 +402,64 @@ public class DBManger {
         ps.executeUpdate();
         close();
     }
+    public void sumAfavor(int aFavor, int id_corredor) throws Exception{
+        String sql = "UPDATE corredor SET aFavor = ? WHERE id = ? ";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, aFavor);
+        ps.setInt(2, id_corredor);
+        ps.executeUpdate();
+        close();
+    }
+    public void GanMon(double ganancia, double apostado, int id_carrera) throws Exception{
+        String sql = "UPDATE carrera SET ganancia = ?, monto_apostado = ? WHERE id = ?";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setDouble(1, ganancia);
+        ps.setDouble(2, apostado);
+        ps.setInt(3, id_carrera);
+        ps.executeUpdate();
+        
+        
+        
+        
+        close();
+    }
+    public void addUaCarr(int id_carrera,int id_user,int id_apuesta) throws Exception{
+        String sql ="INSERT INTO carrera_usuario (id_Carrera,id_Usuario,id_Apuesta) VALUES(?,?,?)";
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id_carrera);
+        ps.setInt(2, id_user);
+        ps.setInt(3, id_apuesta);
+        ps.executeUpdate();
+        close();
+    }
+    public ArrayList<Usuario> listUWiners(int id_car) throws Exception{
+        String sql = "SELECT DISTINCT Usuario.* FROM Usuario JOIN Carrera_Usuario ON Usuario.id = Carrera_Usuario.id_Usuario JOIN Carrera ON Carrera_Usuario.id_Apuesta = Carrera.id_Ganador WHERE Carrera.id = ?;";
+        ArrayList<Usuario> listUsers = new ArrayList<>();
+        open();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id_car);
+        ResultSet  rs = ps.executeQuery();
+        while(rs.next()){
+             Usuario usuario = new Usuario();
+            usuario.setId(rs.getInt("id"));
+            usuario.setNombre(rs.getString("nombre"));
+            usuario.setApellido(rs.getString("apellido"));
+            usuario.setCuenta(rs.getString("cuenta"));
+            usuario.setPassword(rs.getString("password"));
+            usuario.setQuienSoy(rs.getInt("quien_soy"));
+            usuario.setDinero(rs.getDouble("dinero"));
+            listUsers.add(usuario);
+            
+        }
+        
+        close();
+        return listUsers;
+    }
+    
+    
+    
 
 }//fin de clase

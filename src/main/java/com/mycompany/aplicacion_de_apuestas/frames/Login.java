@@ -210,12 +210,11 @@ public class Login extends javax.swing.JFrame {
                     if (user.getQuienSoy() == 1) {
                         new AdminSitio(user).setVisible(true);
                         dispose();
-                        JOptionPane.showMessageDialog(null, "Quieres entrar como admin");
+                       
                     } else if (user.getQuienSoy() == 2) {
-                        JOptionPane.showMessageDialog(null, "Quieres entrar como Usuario");
                         new UserSitio(user).setVisible(true);
-                        //guardarData();
-                        //dispose(); 
+                        
+                        dispose(); 
                     }
                 } else {
                     labelVC.setText("Sin coincidencia *");
